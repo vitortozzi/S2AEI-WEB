@@ -31,8 +31,8 @@
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Alunos <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="adicionaAluno">Cadastrar Aluno</a></li>
-                                <li><a href="#">Editar Aluno</a></li>
-                                <li><a href="#">Excluir Aluno</a></li>
+                                <li><a href="listaAlunosEdita">Editar Aluno</a></li>
+                                <li><a href="deletaAluno">Excluir Aluno</a></li>
                             </ul>
                         </li>
                     </ul>

@@ -5,11 +5,8 @@
  */
 package Controller;
 
-import Model.Aluno;
-import Model.Database.AlunoDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,10 +17,8 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Vítor
  */
-@WebServlet(name = "AdicionaAluno", urlPatterns = {"/addAluno", "/adicionaAluno"})
-public class AdicionaAluno extends HttpServlet {
-
-    Aluno a;
+@WebServlet(name = "EditaAluno", urlPatterns = {"/editAluno"})
+public class EditaAluno extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,10 +37,10 @@ public class AdicionaAluno extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AdicionaAluno</title>");
+            out.println("<title>Servlet EditaAluno</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AdicionaAluno at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet EditaAluno at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -63,9 +58,7 @@ public class AdicionaAluno extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        response.sendRedirect("adicionaAluno.jsp");
-
+        
     }
 
     /**
@@ -79,31 +72,7 @@ public class AdicionaAluno extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
-        a = new Aluno();
-             
-        request.setCharacterEncoding("UTF-8");
-        a.setEmail(request.getParameter("inputEmail"));
-        a.setNome(request.getParameter("inputNome"));
-        a.setSenha(request.getParameter("inputSenha"));
-        a.setMatricula(request.getParameter("inputMatricula"));
-        a.setCurso(request.getParameter("inputCurso"));
-        a.setPeriodo(Integer.parseInt(request.getParameter("inputPeriodo")));
-        a.setPapel("Aluno");
-        a.setStatus("Ativo");
-
-        AlunoDAO dao = new AlunoDAO();
-        boolean ok = dao.addAluno(a);
-
-        if (ok == true) {
-            request.setAttribute("sucesso", "O Usuário foi cadastrado com sucesso!");
-            RequestDispatcher view = request.getRequestDispatcher("sucesso.jsp");
-            view.forward(request, response);
-        } else {
-            request.setAttribute("erro", "Houve um erro ao cadastrar o aluno");
-            RequestDispatcher view = request.getRequestDispatcher("erro.jsp");
-            view.forward(request, response);
-        }
+        processRequest(request, response);
     }
 
     /**

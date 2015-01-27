@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author Vítor
  */
-public class Professor {
+public class Professor extends Usuario{
     
     private String departamento;
     private String disciplinaPrincipal;

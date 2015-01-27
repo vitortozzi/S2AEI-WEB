@@ -9,6 +9,7 @@ import Model.Aluno;
 import Model.Database.AlunoDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,10 +21,10 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Vítor
  */
-@WebServlet(name = "AdicionaAluno", urlPatterns = {"/addAluno", "/adicionaAluno"})
-public class AdicionaAluno extends HttpServlet {
+@WebServlet(name = "DeletaAluno", urlPatterns = {"/deletaAluno"})
+public class DeletaAluno extends HttpServlet {
 
-    Aluno a;
+    AlunoDAO dao;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -42,10 +43,10 @@ public class AdicionaAluno extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet AdicionaAluno</title>");
+            out.println("<title>Servlet DeletaAluno</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet AdicionaAluno at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet DeletaAluno at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -64,8 +65,14 @@ public class AdicionaAluno extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.sendRedirect("adicionaAluno.jsp");
+        ArrayList<Aluno> alunos = new ArrayList<>();
 
+        dao = new AlunoDAO();
+        alunos = dao.getAlunosAtivos();
+
+        request.setAttribute("alunos", alunos);
+        RequestDispatcher view = request.getRequestDispatcher("listaAlunoDeleta.jsp");
+        view.forward(request, response);
     }
 
     /**
@@ -80,30 +87,17 @@ public class AdicionaAluno extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        a = new Aluno();
-             
-        request.setCharacterEncoding("UTF-8");
-        a.setEmail(request.getParameter("inputEmail"));
-        a.setNome(request.getParameter("inputNome"));
-        a.setSenha(request.getParameter("inputSenha"));
-        a.setMatricula(request.getParameter("inputMatricula"));
-        a.setCurso(request.getParameter("inputCurso"));
-        a.setPeriodo(Integer.parseInt(request.getParameter("inputPeriodo")));
-        a.setPapel("Aluno");
-        a.setStatus("Ativo");
-
-        AlunoDAO dao = new AlunoDAO();
-        boolean ok = dao.addAluno(a);
-
-        if (ok == true) {
-            request.setAttribute("sucesso", "O Usuário foi cadastrado com sucesso!");
+        boolean ok = dao.deleteAluno(request.getParameter("param"));
+        if (ok) {
+            request.setAttribute("sucesso", "O aluno foi removido com sucesso!");
             RequestDispatcher view = request.getRequestDispatcher("sucesso.jsp");
             view.forward(request, response);
         } else {
-            request.setAttribute("erro", "Houve um erro ao cadastrar o aluno");
+            request.setAttribute("erro", "Houve um erro ao remover o aluno");
             RequestDispatcher view = request.getRequestDispatcher("erro.jsp");
             view.forward(request, response);
         }
+
     }
 
     /**
