@@ -95,9 +95,11 @@ public class ListaAlunosEdita extends HttpServlet {
         dao = new AlunoDAO();
         
         a = dao.getAluno(request.getParameter("param"));
-            
+                 
+        RequestDispatcher view = request.getRequestDispatcher("editarAluno.jsp");
+        request.setAttribute("aluno", a);
+        view.forward(request, response);
         
-
     }
 
     /**
