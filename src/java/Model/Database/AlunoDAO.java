@@ -181,4 +181,26 @@ public class AlunoDAO {
         return true;
 
     }
+    
+    public boolean updateAluno(Aluno a){
+        String sql = "UPDATE aluno a, usuario u SET u.nome = (?), a.curso = (?), a.periodo = (?), u.status = (?) "
+                + " WHERE a.email = (?) and u.email = (?)";
+        
+        try{
+            pstm = connection.prepareStatement(sql);
+            pstm.setString(1, a.getNome());
+            pstm.setString(2, a.getCurso());
+            pstm.setInt(3, a.getPeriodo());
+            pstm.setString(4, a.getStatus());
+            pstm.setString(5, a.getEmail());
+            pstm.setString(6, a.getEmail());
+            
+            pstm.execute();
+            pstm.close();
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return true;
+    }
+    
 }

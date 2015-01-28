@@ -25,4 +25,11 @@ public class StringUtils {
         else return false;
     }
     
+    public boolean isStatusValid(String status){
+        if(status.equals("Ativo") || status.equals("Inativo") || status.equals("Bloqueado")){
+            return true;
+        }
+        else return false;
+    }
+    
 }

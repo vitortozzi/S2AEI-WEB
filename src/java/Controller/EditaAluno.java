@@ -5,8 +5,11 @@
  */
 package Controller;
 
+import Model.Aluno;
+import Model.Database.AlunoDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,7 +22,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "EditaAluno", urlPatterns = {"/editAluno"})
 public class EditaAluno extends HttpServlet {
-
+    
+    Aluno a;
+    AlunoDAO dao;
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -72,7 +78,26 @@ public class EditaAluno extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        
+        a = new Aluno();
+        
+        a.setNome(request.getParameter("inputNome"));
+        a.setCurso(request.getParameter("inputCurso"));
+        a.setPeriodo(Integer.valueOf(request.getParameter("inputPeriodo")));
+        a.setStatus(request.getParameter("inputStatus"));
+        a.setEmail(request.getParameter("inputEmail"));
+        
+        dao = new AlunoDAO();
+        boolean ok = dao.updateAluno(a);
+        if (ok) {
+            request.setAttribute("sucesso", "O aluno foi editado com sucesso!");
+            RequestDispatcher view = request.getRequestDispatcher("sucesso.jsp");
+            view.forward(request, response);
+        } else {
+            request.setAttribute("erro", "Houve um erro ao editar o aluno");
+            RequestDispatcher view = request.getRequestDispatcher("erro.jsp");
+            view.forward(request, response);
+        }   
     }
 
     /**
