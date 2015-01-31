@@ -5,26 +5,28 @@
  */
 package Controller;
 
-import Model.Aluno;
-import Model.Database.AlunoDAO;
+import Model.Database.ProjetoDAO;
+import Model.Projeto;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author Vítor
  */
-@WebServlet(name = "EditaAluno", urlPatterns = {"/editAluno"})
-public class EditaAluno extends HttpServlet {
-    
-    Aluno a;
-    AlunoDAO dao;
+@WebServlet(name = "VisualizaProjeto", urlPatterns = {"/visualizaProjeto"})
+public class VisualizaProjeto extends HttpServlet {
+
+    ProjetoDAO daoProjeto;
+    ArrayList<Projeto> projetos;
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,10 +45,10 @@ public class EditaAluno extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet EditaAluno</title>");            
+            out.println("<title>Servlet VisualizaProjeto</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet EditaAluno at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet VisualizaProjeto at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -65,6 +67,19 @@ public class EditaAluno extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        HttpSession session = request.getSession();
+        
+        projetos = new ArrayList<>();
+        
+        daoProjeto = new ProjetoDAO();
+        projetos = daoProjeto.getProjetosParticipante((String)session.getAttribute("nome"));
+        
+        request.setAttribute("projetos", projetos);
+        RequestDispatcher view = request.getRequestDispatcher("visualizarProjetos.jsp");
+        view.forward(request, response);
+        
+        
+        
     }
 
     /**
@@ -79,27 +94,11 @@ public class EditaAluno extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        a = new Aluno();
+        String id = request.getParameter("param");
+        int x = 10;
         
+        // Consultar no banco respostas para este id de projeto
         
-        request.setCharacterEncoding("UTF-8");
-        a.setNome(request.getParameter("inputNome"));
-        a.setCurso(request.getParameter("inputCurso"));
-        a.setPeriodo(Integer.valueOf(request.getParameter("inputPeriodo")));
-        a.setStatus(request.getParameter("inputStatus"));
-        a.setEmail(request.getParameter("inputEmail"));
-        
-        dao = new AlunoDAO();
-        boolean ok = dao.updateAluno(a);
-        if (ok) {
-            request.setAttribute("sucesso", "O aluno foi editado com sucesso!");
-            RequestDispatcher view = request.getRequestDispatcher("sucesso.jsp");
-            view.forward(request, response);
-        } else {
-            request.setAttribute("erro", "Houve um erro ao editar o aluno");
-            RequestDispatcher view = request.getRequestDispatcher("erro.jsp");
-            view.forward(request, response);
-        }   
     }
 
     /**

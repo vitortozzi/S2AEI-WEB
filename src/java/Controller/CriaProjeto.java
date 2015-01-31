@@ -7,8 +7,14 @@ package Controller;
 
 import Model.Aluno;
 import Model.Database.AlunoDAO;
+import Model.Database.ProfessorDAO;
+import Model.Database.ProjetoDAO;
+import Model.Professor;
+import Model.Projeto;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,11 +26,13 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Vítor
  */
-@WebServlet(name = "EditaAluno", urlPatterns = {"/editAluno"})
-public class EditaAluno extends HttpServlet {
-    
-    Aluno a;
+@WebServlet(name = "CriaProjeto", urlPatterns = {"/criaProjeto"})
+public class CriaProjeto extends HttpServlet {
+
     AlunoDAO dao;
+    ProfessorDAO daoProf;
+    ProjetoDAO daoProj;
+    Projeto projeto;
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,10 +51,10 @@ public class EditaAluno extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet EditaAluno</title>");            
+            out.println("<title>Servlet CriaProjeto</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet EditaAluno at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet CriaProjeto at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -65,6 +73,23 @@ public class EditaAluno extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        dao = new AlunoDAO();
+        daoProf = new ProfessorDAO();
+        
+        ArrayList<Professor> professores = new ArrayList<>();
+        professores = daoProf.getProfessores();
+        
+        ArrayList<String> alunosNotLeader = new ArrayList<>();
+        alunosNotLeader = dao.getAlunosNotLeader();
+        
+        ArrayList<Aluno> alunos = new ArrayList<>();
+        alunos = dao.getAlunosAtivos();
+        
+        request.setAttribute("professores", professores);
+        request.setAttribute("alunosNotLeader", alunosNotLeader);
+        request.setAttribute("alunosAtivos", alunos);
+        RequestDispatcher view = request.getRequestDispatcher("criarProjeto.jsp");
+        view.forward(request, response);
     }
 
     /**
@@ -79,27 +104,20 @@ public class EditaAluno extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        a = new Aluno();
-        
+        projeto = new Projeto();
         
         request.setCharacterEncoding("UTF-8");
-        a.setNome(request.getParameter("inputNome"));
-        a.setCurso(request.getParameter("inputCurso"));
-        a.setPeriodo(Integer.valueOf(request.getParameter("inputPeriodo")));
-        a.setStatus(request.getParameter("inputStatus"));
-        a.setEmail(request.getParameter("inputEmail"));
+        projeto.setTitulo(request.getParameter("inputTitulo"));
+        projeto.setArea(request.getParameter("inputArea"));
+        projeto.setDescricao(request.getParameter("inputDesc"));
+        projeto.setLider(request.getParameter("inputLider"));
+        projeto.setOrientador(request.getParameter("inputOrientador"));
+        projeto.setMembros(request.getParameterValues("participantes"));
         
-        dao = new AlunoDAO();
-        boolean ok = dao.updateAluno(a);
-        if (ok) {
-            request.setAttribute("sucesso", "O aluno foi editado com sucesso!");
-            RequestDispatcher view = request.getRequestDispatcher("sucesso.jsp");
-            view.forward(request, response);
-        } else {
-            request.setAttribute("erro", "Houve um erro ao editar o aluno");
-            RequestDispatcher view = request.getRequestDispatcher("erro.jsp");
-            view.forward(request, response);
-        }   
+        daoProj = new ProjetoDAO();
+        daoProj.insertProjeto(projeto);
+        
+        
     }
 
     /**

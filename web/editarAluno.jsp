@@ -65,7 +65,7 @@
                 <br/>
                 <div class="row">
                     <div class="col-lg-4">
-                        <button type="submit" class="btn btn-default">Cadastrar</button>
+                        <button type="submit" class="btn btn-default">Salvar</button>
                         <button type="reset" class="btn btn-warning">Restaurar</button>
                     </div>
                 </div>

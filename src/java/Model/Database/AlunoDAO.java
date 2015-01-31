@@ -145,11 +145,7 @@ public class AlunoDAO {
         }
 
     }
-
-    public void editAluno(Aluno a) {
-
-    }
-
+  
     public boolean deleteAluno(String email) {
 
         String sql = "DELETE FROM participa WHERE email_aluno = (?)";
@@ -183,7 +179,7 @@ public class AlunoDAO {
     }
     
     public boolean updateAluno(Aluno a){
-        String sql = "UPDATE aluno a, usuario u SET u.nome = (?), a.curso = (?), a.periodo = (?), u.status = (?) "
+        String sql = "UPDATE aluno a, usuario u SET u.nome = (?), a.curso = (?), a.periodo = (?), u.status = (?), u.ultima_modificacao = curdate() "
                 + " WHERE a.email = (?) and u.email = (?)";
         
         try{
@@ -202,5 +198,27 @@ public class AlunoDAO {
         }
         return true;
     }
-    
+   
+    public ArrayList<String> getAlunosNotLeader(){
+        
+        String sql = "SELECT u.nome FROM aluno a, usuario u WHERE a.email NOT IN (SELECT email_lider FROM projeto) and u.email"
+                + " = a.email";
+        
+        ArrayList<String> alunos = new ArrayList<>();
+        
+        try{
+            pstm = connection.prepareStatement(sql);
+            pstm.execute();
+            rs = pstm.getResultSet();
+            
+            while(rs.next()){
+                alunos.add(rs.getString(1));
+            }
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        
+        return alunos;
+        
+    }
 }

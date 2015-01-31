@@ -16,13 +16,13 @@ public class Projeto {
     private int id;
     private String titulo;
     private String descricao;
-    private Aluno lider;
+    private String lider;
     private String dataCriacao;
     private String ultimaModificacao;
     private String Status;
-    private ArrayList<Aluno> membros;
+    private String[] membros;
     private String area;
-    private Professor orientador;
+    private String orientador;
     private ArrayList<String> perguntas;
     private ArrayList<String> respostas;
 
@@ -50,11 +50,11 @@ public class Projeto {
         this.descricao = descricao;
     }
 
-    public Aluno getLider() {
+    public String getLider() {
         return lider;
     }
 
-    public void setLider(Aluno lider) {
+    public void setLider(String lider) {
         this.lider = lider;
     }
 
@@ -82,11 +82,11 @@ public class Projeto {
         this.Status = Status;
     }
 
-    public ArrayList<Aluno> getMembros() {
+    public String[] getMembros() {
         return membros;
     }
 
-    public void setMembros(ArrayList<Aluno> membros) {
+    public void setMembros(String[] membros) {
         this.membros = membros;
     }
 
@@ -98,11 +98,11 @@ public class Projeto {
         this.area = area;
     }
 
-    public Professor getOrientador() {
+    public String getOrientador() {
         return orientador;
     }
 
-    public void setOrientador(Professor orientador) {
+    public void setOrientador(String orientador) {
         this.orientador = orientador;
     }
 
