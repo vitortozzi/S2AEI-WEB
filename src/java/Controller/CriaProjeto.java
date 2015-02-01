@@ -33,7 +33,7 @@ public class CriaProjeto extends HttpServlet {
     ProfessorDAO daoProf;
     ProjetoDAO daoProj;
     Projeto projeto;
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -51,7 +51,7 @@ public class CriaProjeto extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet CriaProjeto</title>");            
+            out.println("<title>Servlet CriaProjeto</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet CriaProjeto at " + request.getContextPath() + "</h1>");
@@ -72,19 +72,19 @@ public class CriaProjeto extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         dao = new AlunoDAO();
         daoProf = new ProfessorDAO();
-        
+
         ArrayList<Professor> professores = new ArrayList<>();
         professores = daoProf.getProfessores();
-        
+
         ArrayList<String> alunosNotLeader = new ArrayList<>();
         alunosNotLeader = dao.getAlunosNotLeader();
-        
+
         ArrayList<Aluno> alunos = new ArrayList<>();
         alunos = dao.getAlunosAtivos();
-        
+
         request.setAttribute("professores", professores);
         request.setAttribute("alunosNotLeader", alunosNotLeader);
         request.setAttribute("alunosAtivos", alunos);
@@ -103,9 +103,9 @@ public class CriaProjeto extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         projeto = new Projeto();
-        
+
         request.setCharacterEncoding("UTF-8");
         projeto.setTitulo(request.getParameter("inputTitulo"));
         projeto.setArea(request.getParameter("inputArea"));
@@ -113,11 +113,19 @@ public class CriaProjeto extends HttpServlet {
         projeto.setLider(request.getParameter("inputLider"));
         projeto.setOrientador(request.getParameter("inputOrientador"));
         projeto.setMembros(request.getParameterValues("participantes"));
-        
+
         daoProj = new ProjetoDAO();
-        daoProj.insertProjeto(projeto);
+        if (daoProj.insertProjeto(projeto)) {
+            request.setAttribute("sucesso", "O projeto foi criado com sucesso!");
+            RequestDispatcher view = request.getRequestDispatcher("sucesso.jsp");
+            view.forward(request, response);
+        } else {
+            request.setAttribute("aviso", "Houve um erro ao criar o projeto");
+            RequestDispatcher view = request.getRequestDispatcher("aviso.jsp");
+            view.forward(request, response);
+        }
         
-        
+
     }
 
     /**

@@ -100,8 +100,8 @@ public class AdicionaAluno extends HttpServlet {
             RequestDispatcher view = request.getRequestDispatcher("sucesso.jsp");
             view.forward(request, response);
         } else {
-            request.setAttribute("erro", "Houve um erro ao cadastrar o aluno");
-            RequestDispatcher view = request.getRequestDispatcher("erro.jsp");
+            request.setAttribute("aviso", "Houve um erro ao cadastrar o aluno");
+            RequestDispatcher view = request.getRequestDispatcher("aviso.jsp");
             view.forward(request, response);
         }
     }

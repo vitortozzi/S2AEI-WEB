@@ -4,6 +4,7 @@
     Author     : Vítor
 --%>
 
+<%@page import="Model.Projeto"%>
 <%@page import="java.util.ArrayList"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -17,27 +18,31 @@
     </head>
     <body>
         <%@include file="header.jsp"%>
+        <%
+            Projeto projeto = (Projeto) request.getAttribute("dadosProjeto");
+            ArrayList<String> titulos = (ArrayList<String>) request.getAttribute("listaTitulos");
+            ArrayList<String> questoes = (ArrayList<String>) request.getAttribute("listaQuestoes");%>
         <div class="container">
             <div class="panel panel-default">
-                <div class="panel-heading">Título: ABCD</div>
+                <div class="panel-heading">Título: <%=projeto.getTitulo()%></div>
                 <div class="panel-body">
-                    <form role="form" method="post" action="" accept-charset="UTF-8">
+                    <form role="form" method="post" action="preencheProjeto" accept-charset="UTF-8">
                         <div class="form group">
                             <%
-                            ArrayList<String> titulos = (ArrayList<String>) request.getAttribute("listaTitulos");
-                            ArrayList<String> questoes = (ArrayList<String>) request.getAttribute("listaQuestoes");
-                            
-                            for(int i = 0; i < titulos.size(); i++){                            
+                                for (int i = 0; i < titulos.size(); i++) {
                             %>
                             <div class="row">
                                 <div class="col-lg-10"
-                                     <label><%=titulos.get(i)%></label><br>
-                                <label><%=questoes.get(i)%></label>
-                                <textarea class="form-control" rows="5" id="comment" name = "resposta<%=i%>"></textarea>
-                                <br>
+                                     <label>Quadro<%=i+1%> - <%=titulos.get(i)%></label><br>
+                                    <label><%=questoes.get(i)%></label>
+                                    <textarea class="form-control" rows="5" id="comment" name = "resposta<%=i%>"><%
+                                        if (projeto.getRespostas().get(i) != null) {
+                                            out.print(projeto.getRespostas().get(i));
+                                        }%></textarea>
+                                    <br>
                                 </div>
                             </div>
-                             <%}%>
+                            <%}%>
                             <div class="row">
                                 <div class="col-lg-4">
                                     <button type="submit" class="btn btn-default">Salvar</button>

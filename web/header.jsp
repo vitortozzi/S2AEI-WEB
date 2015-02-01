@@ -43,7 +43,7 @@
                                 <ul class="dropdown-menu" role="menu">
                                     <%if (session.getAttribute("papel").equals("Administrador")) {%>
                                     <li><a href="criaProjeto">Criar</a></li><%}%>
-                                    <%if (session.getAttribute("papel").equals("Aluno")) {%>
+                                    <%if ((session.getAttribute("papel").equals("Aluno")) || (session.getAttribute("papel").equals("Professor"))) {%>
                                     <li><a href="visualizaProjeto">Visualizar</a></li><%}%>
                                     <%if (session.getAttribute("papel").equals("Aluno")) {%>
                                     <li><a href="preencheProjeto">Preencher</a></li><%}%>

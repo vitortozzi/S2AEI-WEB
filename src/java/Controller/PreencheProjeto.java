@@ -5,6 +5,8 @@
  */
 package Controller;
 
+import Model.Database.ProjetoDAO;
+import Model.Projeto;
 import Utils.XMLParser;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,6 +19,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.jdom2.JDOMException;
 
 /**
@@ -25,6 +28,9 @@ import org.jdom2.JDOMException;
  */
 @WebServlet(name = "PreencheProjeto", urlPatterns = {"/preencheProjeto"})
 public class PreencheProjeto extends HttpServlet {
+
+    ProjetoDAO daoProjeto;
+    Projeto p;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -43,7 +49,7 @@ public class PreencheProjeto extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet PreencheProjeto</title>");            
+            out.println("<title>Servlet PreencheProjeto</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet PreencheProjeto at " + request.getContextPath() + "</h1>");
@@ -64,23 +70,40 @@ public class PreencheProjeto extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
+        p = new Projeto();
+        daoProjeto = new ProjetoDAO();
+
+        HttpSession session = request.getSession();
+        String nome = (String) session.getAttribute("nome");
+
         ArrayList<String> titulos = new ArrayList<>();
         ArrayList<String> questoes = new ArrayList<>();
-        
-        XMLParser xml = new XMLParser();
-        try {
-            titulos = xml.getTitulos();
-            questoes = xml.getQuestoes();
-        } catch (JDOMException ex) {
-            Logger.getLogger(PreencheProjeto.class.getName()).log(Level.SEVERE, null, ex);
+
+        p = daoProjeto.getProjetoPorLider(nome);
+        p.setRespostas(daoProjeto.getRespostas(p.getId()));
+
+        if (p.getRespostas().size() > 0) {
+            XMLParser xml = new XMLParser();
+            try {
+                titulos = xml.getTitulos();
+                questoes = xml.getQuestoes();
+            } catch (JDOMException ex) {
+                Logger.getLogger(PreencheProjeto.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            request.setAttribute("dadosProjeto", p);
+            request.setAttribute("listaTitulos", titulos);
+            request.setAttribute("listaQuestoes", questoes);
+            RequestDispatcher view = request.getRequestDispatcher("preenchimentoProjeto.jsp");
+            view.forward(request, response);
+        } else {
+            request.setAttribute("aviso", "Você não é líder de nenhum projeto. Para visualizar projetos do qual faz parte, clique em 'Projeto'"
+                    + " e em seguida clique em 'Visualizar'");
+            RequestDispatcher view = request.getRequestDispatcher("aviso.jsp");
+            view.forward(request, response);
         }
-        
-        request.setAttribute("listaTitulos", titulos);
-        request.setAttribute("listaQuestoes", questoes);
-        RequestDispatcher view = request.getRequestDispatcher("preenchimentoProjeto.jsp");
-        view.forward(request, response);
-        
+
     }
 
     /**
@@ -94,9 +117,22 @@ public class PreencheProjeto extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
-        
-        //Submeter ao BD as respostas
+
+        request.setCharacterEncoding("UTF-8");
+        for (int i = 0; i < 9; i++) {
+            p.getRespostas().set(i, request.getParameter("resposta" + i));
+        }
+
+        if (daoProjeto.updateRespostas(p)) {
+            request.setAttribute("sucesso", "O projeto foi salvo com sucesso!");
+            RequestDispatcher view = request.getRequestDispatcher("sucesso.jsp");
+            view.forward(request, response);
+        } else {
+            request.setAttribute("aviso", "Houve um erro ao atualizar o projeto");
+            RequestDispatcher view = request.getRequestDispatcher("aviso.jsp");
+            view.forward(request, response);
+        }
+
     }
 
     /**

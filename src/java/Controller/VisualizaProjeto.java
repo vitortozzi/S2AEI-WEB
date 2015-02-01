@@ -7,9 +7,12 @@ package Controller;
 
 import Model.Database.ProjetoDAO;
 import Model.Projeto;
+import Utils.XMLParser;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,6 +20,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.jdom2.JDOMException;
 
 /**
  *
@@ -27,6 +31,7 @@ public class VisualizaProjeto extends HttpServlet {
 
     ProjetoDAO daoProjeto;
     ArrayList<Projeto> projetos;
+    Projeto p;
     
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -45,7 +50,7 @@ public class VisualizaProjeto extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet VisualizaProjeto</title>");            
+            out.println("<title>Servlet VisualizaProjeto</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet VisualizaProjeto at " + request.getContextPath() + "</h1>");
@@ -66,20 +71,22 @@ public class VisualizaProjeto extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         HttpSession session = request.getSession();
-        
+
         projetos = new ArrayList<>();
-        
+
         daoProjeto = new ProjetoDAO();
-        projetos = daoProjeto.getProjetosParticipante((String)session.getAttribute("nome"));
-        
+        if (session.getAttribute("papel").equals("Aluno")) {
+            projetos = daoProjeto.getProjetosParticipante((String) session.getAttribute("nome"));
+        } else if (session.getAttribute("papel").equals("Professor")) {
+            projetos = daoProjeto.getProjetosOrientador((String) session.getAttribute("nome"));
+        }
+
         request.setAttribute("projetos", projetos);
         RequestDispatcher view = request.getRequestDispatcher("visualizarProjetos.jsp");
         view.forward(request, response);
-        
-        
-        
+
     }
 
     /**
@@ -93,12 +100,41 @@ public class VisualizaProjeto extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        p = new Projeto();
+        daoProjeto = new ProjetoDAO();
         
-        String id = request.getParameter("param");
-        int x = 10;
+        ArrayList<String> titulos = new ArrayList<>();
+        ArrayList<String> questoes = new ArrayList<>();
+        
+        int id = Integer.parseInt(request.getParameter("param"));      
+        p = daoProjeto.getProjetoPorID(id);
+        p.setId(id);
+        p.setRespostas(daoProjeto.getRespostas(p.getId()));
+        
+         if (p.getRespostas().size() > 0) {
+            XMLParser xml = new XMLParser();
+            try {
+                titulos = xml.getTitulos();
+                questoes = xml.getQuestoes();
+            } catch (JDOMException ex) {
+                Logger.getLogger(PreencheProjeto.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            request.setAttribute("dadosProjeto", p);
+            request.setAttribute("listaTitulos", titulos);
+            request.setAttribute("listaQuestoes", questoes);
+            RequestDispatcher view = request.getRequestDispatcher("projetoDetalhes.jsp");
+            view.forward(request, response);
+         }
+         else{
+             request.setAttribute("aviso", "Não há projetos aos quais você tem relação para exibir.");
+            RequestDispatcher view = request.getRequestDispatcher("aviso.jsp");
+            view.forward(request, response);
+         }
+        
         
         // Consultar no banco respostas para este id de projeto
-        
     }
 
     /**
