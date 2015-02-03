@@ -17,7 +17,7 @@
     <body>
         <%@include file="header.jsp"%>
         <div class="container">
-            <h1>:( Um erro foi encontrado e a aplicação precisou ser fechada.</h1>
+            <h1>:( Houve um erro ao processar a requisição.</h1>
             <p>Detalhes: <%=request.getAttribute("aviso")%></p>
         </div>
     </body>

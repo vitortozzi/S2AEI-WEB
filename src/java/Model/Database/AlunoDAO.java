@@ -202,7 +202,7 @@ public class AlunoDAO {
     public ArrayList<String> getAlunosNotLeader(){
         
         String sql = "SELECT u.nome FROM aluno a, usuario u WHERE a.email NOT IN (SELECT email_lider FROM projeto) and u.email"
-                + " = a.email";
+                + " = a.email and u.status = 'Ativo'";
         
         ArrayList<String> alunos = new ArrayList<>();
         

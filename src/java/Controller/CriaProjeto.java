@@ -77,7 +77,7 @@ public class CriaProjeto extends HttpServlet {
         daoProf = new ProfessorDAO();
 
         ArrayList<Professor> professores = new ArrayList<>();
-        professores = daoProf.getProfessores();
+        professores = daoProf.getProfessoresAtivos();
 
         ArrayList<String> alunosNotLeader = new ArrayList<>();
         alunosNotLeader = dao.getAlunosNotLeader();
