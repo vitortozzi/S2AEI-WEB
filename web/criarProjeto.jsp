@@ -4,8 +4,8 @@
     Author     : Vítor
 --%>
 
-<%@page import="Model.Aluno"%>
-<%@page import="Model.Professor"%>
+<%@page import="Model.Tabelas.Aluno"%>
+<%@page import="Model.Tabelas.Professor"%>
 <%@page import="java.util.ArrayList"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -42,16 +42,7 @@
                             </div>
                             <br/>
                             <div class="row">
-                                <div class="col-lg-2">
-                                    <label for="sel1">Aluno Líder:</label>
-                                    <select name="inputLider" class="form-control" id="selLider">
-                                        <%ArrayList<String> nomes = (ArrayList<String>) request.getAttribute("alunosNotLeader");
-                                            for (String nome : nomes) {
-                                        %>  
-                                        <option><%=nome%></option>
-                                        <%}%>
-                                    </select>
-                                </div>
+                                
                                 <div class="col-lg-2">
                                     <label for="sel1">Professor Orientador:</label>
                                     <select name="inputOrientador" class="form-control" id="selProf">
@@ -74,9 +65,6 @@
                                     <label><input type="checkbox" name="participantes" value="<%=a.getNome()%>"><%=a.getNome()%></label>
                                     </div>
                                     <%}%>
-<!--                                    <div class="checkbox">
-                                    <label><input type="checkbox" name="vehicle" value="Car">I have a car</label>
-                                    </div>-->
                                 </div>
                             </div>
                             <br/>

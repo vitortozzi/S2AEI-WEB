@@ -5,7 +5,7 @@
  */
 package Controller;
 
-import Model.Aluno;
+import Model.Tabelas.Aluno;
 import Model.Database.AlunoDAO;
 import java.io.IOException;
 import java.io.PrintWriter;

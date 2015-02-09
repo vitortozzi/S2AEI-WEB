@@ -37,19 +37,19 @@
                             </li>
                         </ul>
                         <% } %>
+                        <%if ((session.getAttribute("papel").equals("Aluno")) || (session.getAttribute("papel").equals("Professor"))) {%>
                         <ul class="nav navbar-nav">
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Projetos <span class="caret"></span></a>
                                 <ul class="dropdown-menu" role="menu">
-                                    <%if (session.getAttribute("papel").equals("Administrador")) {%>
-                                    <li><a href="criaProjeto">Criar</a></li><%}%>
-                                    <%if ((session.getAttribute("papel").equals("Aluno")) || (session.getAttribute("papel").equals("Professor"))) {%>
-                                    <li><a href="visualizaProjeto">Visualizar</a></li><%}%>
+                                    <%if (session.getAttribute("papel").equals("Aluno")) {%>
+                                    <li><a href="criaProjeto">Criar</a></li> <%}%>                    
+                                    <li><a href="visualizaProjeto">Visualizar</a></li>
                                     <%if (session.getAttribute("papel").equals("Aluno")) {%>
                                     <li><a href="preencheProjeto">Preencher</a></li><%}%>
-                                    <%if (session.getAttribute("papel").equals("Administrador")) {%>
-                                    <li><a href="#">Finalizar</a></li><%}%>
-                                </ul>
+                                    <%if (session.getAttribute("papel").equals("Aluno")) {%>
+                                    <li><a href="finalizaProjeto">Finalizar</a></li><%}%>
+                                </ul><%}%>
                             </li>
                         </ul>
                         <ul class="nav navbar-nav navbar-right">

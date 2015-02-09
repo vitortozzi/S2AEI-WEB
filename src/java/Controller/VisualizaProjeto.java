@@ -6,7 +6,7 @@
 package Controller;
 
 import Model.Database.ProjetoDAO;
-import Model.Projeto;
+import Model.Tabelas.Projeto;
 import Utils.XMLParser;
 import java.io.IOException;
 import java.io.PrintWriter;

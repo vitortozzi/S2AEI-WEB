@@ -5,8 +5,8 @@
  */
 package Controller;
 
-import Model.Aluno;
 import Model.Database.AlunoDAO;
+import Model.Tabelas.Aluno;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;

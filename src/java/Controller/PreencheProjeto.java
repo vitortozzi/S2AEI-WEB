@@ -6,7 +6,7 @@
 package Controller;
 
 import Model.Database.ProjetoDAO;
-import Model.Projeto;
+import Model.Tabelas.Projeto;
 import Utils.XMLParser;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -84,19 +84,25 @@ public class PreencheProjeto extends HttpServlet {
         p.setRespostas(daoProjeto.getRespostas(p.getId()));
 
         if (p.getRespostas().size() > 0) {
-            XMLParser xml = new XMLParser();
-            try {
-                titulos = xml.getTitulos();
-                questoes = xml.getQuestoes();
-            } catch (JDOMException ex) {
-                Logger.getLogger(PreencheProjeto.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            if (p.getStatus().equals("Novo") || p.getStatus().equals("Em preenchimento")) {
+                XMLParser xml = new XMLParser();
+                try {
+                    titulos = xml.getTitulos();
+                    questoes = xml.getQuestoes();
+                } catch (JDOMException ex) {
+                    Logger.getLogger(PreencheProjeto.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
-            request.setAttribute("dadosProjeto", p);
-            request.setAttribute("listaTitulos", titulos);
-            request.setAttribute("listaQuestoes", questoes);
-            RequestDispatcher view = request.getRequestDispatcher("preenchimentoProjeto.jsp");
-            view.forward(request, response);
+                request.setAttribute("dadosProjeto", p);
+                request.setAttribute("listaTitulos", titulos);
+                request.setAttribute("listaQuestoes", questoes);
+                RequestDispatcher view = request.getRequestDispatcher("preenchimentoProjeto.jsp");
+                view.forward(request, response);
+            } else {
+                request.setAttribute("aviso", "Seu projeto já foi finalizado e não pode ser editado.");
+                RequestDispatcher view = request.getRequestDispatcher("aviso.jsp");
+                view.forward(request, response);
+            }
         } else {
             request.setAttribute("aviso", "Você não é líder de nenhum projeto. Para visualizar projetos do qual faz parte, clique em 'Projeto'"
                     + " e em seguida clique em 'Visualizar'");

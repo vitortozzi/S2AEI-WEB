@@ -5,12 +5,13 @@
  */
 package Controller;
 
-import Model.Aluno;
 import Model.Database.AlunoDAO;
 import Model.Database.ProfessorDAO;
 import Model.Database.ProjetoDAO;
-import Model.Professor;
-import Model.Projeto;
+import Model.Tabelas.Aluno;
+import Model.Tabelas.Professor;
+import Model.Tabelas.Projeto;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -75,21 +77,28 @@ public class CriaProjeto extends HttpServlet {
 
         dao = new AlunoDAO();
         daoProf = new ProfessorDAO();
+        daoProj = new ProjetoDAO();
 
-        ArrayList<Professor> professores = new ArrayList<>();
-        professores = daoProf.getProfessoresAtivos();
+        HttpSession session = request.getSession();
 
-        ArrayList<String> alunosNotLeader = new ArrayList<>();
-        alunosNotLeader = dao.getAlunosNotLeader();
+        // Pegar nome da sessão e enviar ao banco
+        if (!dao.AlunosIsLeader((String) session.getAttribute("nome"))) {
+            ArrayList<Aluno> alunos = new ArrayList<>();
+            alunos = dao.getAlunosAtivos();
 
-        ArrayList<Aluno> alunos = new ArrayList<>();
-        alunos = dao.getAlunosAtivos();
+            ArrayList<Professor> professores = new ArrayList<>();
+            professores = daoProf.getProfessoresAtivos();
 
-        request.setAttribute("professores", professores);
-        request.setAttribute("alunosNotLeader", alunosNotLeader);
-        request.setAttribute("alunosAtivos", alunos);
-        RequestDispatcher view = request.getRequestDispatcher("criarProjeto.jsp");
-        view.forward(request, response);
+            request.setAttribute("professores", professores);
+            request.setAttribute("alunosAtivos", alunos);
+            RequestDispatcher view = request.getRequestDispatcher("criarProjeto.jsp");
+            view.forward(request, response);
+        } else {
+            request.setAttribute("aviso", "Você já lidera um projeto ativo.");
+            RequestDispatcher view = request.getRequestDispatcher("aviso.jsp");
+            view.forward(request, response);
+        }
+
     }
 
     /**
@@ -106,11 +115,13 @@ public class CriaProjeto extends HttpServlet {
 
         projeto = new Projeto();
 
+        HttpSession session = request.getSession();
+
         request.setCharacterEncoding("UTF-8");
         projeto.setTitulo(request.getParameter("inputTitulo"));
         projeto.setArea(request.getParameter("inputArea"));
         projeto.setDescricao(request.getParameter("inputDesc"));
-        projeto.setLider(request.getParameter("inputLider"));
+        projeto.setLider((String) session.getAttribute("nome"));
         projeto.setOrientador(request.getParameter("inputOrientador"));
         projeto.setMembros(request.getParameterValues("participantes"));
 
@@ -124,7 +135,6 @@ public class CriaProjeto extends HttpServlet {
             RequestDispatcher view = request.getRequestDispatcher("aviso.jsp");
             view.forward(request, response);
         }
-        
 
     }
 

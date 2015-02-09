@@ -5,11 +5,11 @@
  */
 package Controller;
 
-import Model.Database.AutenticacaoDAO;
-import Model.Tabelas.Usuario;
-
+import Model.Database.ProjetoDAO;
+import Model.Tabelas.Projeto;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -22,13 +22,14 @@ import javax.servlet.http.HttpSession;
  *
  * @author Vítor
  */
-@WebServlet(name = "Autenticacao", urlPatterns = {"/login"})
-public class Autenticacao extends HttpServlet {
+@WebServlet(name = "FinalizaProjeto", urlPatterns = {"/finalizaProjeto"})
+public class FinalizaProjeto extends HttpServlet {
 
-    private final boolean DEV_MODE = false;
-
-    Usuario user;
-
+    ProjetoDAO daoProjeto;
+    Projeto projeto;
+    
+    HttpSession session;
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -46,10 +47,10 @@ public class Autenticacao extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet Autenticacao</title>");
+            out.println("<title>Servlet FinalizaProjeto</title>");            
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet Autenticacao at " + request.getContextPath() + "</h1>");
+            out.println("<h1>Servlet FinalizaProjeto at " + request.getContextPath() + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -67,7 +68,17 @@ public class Autenticacao extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        
+        projeto = new Projeto();
+        daoProjeto = new ProjetoDAO();
+        session = request.getSession();
+        
+        projeto = daoProjeto.getProjetoPorLider((String)session.getAttribute("nome"));
+        
+        request.setAttribute("projeto", projeto);
+        RequestDispatcher view = request.getRequestDispatcher("finalizaProjeto.jsp");
+        view.forward(request, response);
+        
     }
 
     /**
@@ -81,55 +92,19 @@ public class Autenticacao extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-//        processRequest(request, response);
-
-        String userForm = request.getParameter("email");
-        String senhaForm = request.getParameter("senha");
-
-        if (DEV_MODE == true) {
-
-            String rootEmail = "vitortozzi@gmail.com";
-            String rootPassword = "eueueu";
-
-            user = new Usuario();
-            user.setSenha(senhaForm);
-            user.setEmail(userForm);
-            user.setNome("Vítor");
-
-            if (user.getEmail().equals(rootEmail) && user.getSenha().equals(rootPassword)) {
-                HttpSession session = request.getSession();
-                session.setAttribute("nome", user.getNome());
-                session.setAttribute("email", user.getEmail());
-                session.setAttribute("papel", "administrador");
-                response.sendRedirect("home.jsp");
-            } else {
-                response.sendRedirect("index.html");
-            }
-        } else {
-            AutenticacaoDAO dao = new AutenticacaoDAO();
-            user = dao.checkPassword(userForm, senhaForm);
-
-            if (user.getNome() != null) {
-                if (user.getStatus().equals("Ativo")) {
-                    HttpSession session = request.getSession();
-                    session.setAttribute("nome", user.getNome());
-                    session.setAttribute("email", user.getEmail());
-                    session.setAttribute("papel", user.getPapel());
-//                    response.sendRedirect("home.jsp");
-                    RequestDispatcher view = request.getRequestDispatcher("home.jsp");
-                    view.forward(request, response);
-                    
-                } else {
-                    request.setAttribute("erro", "o usuário encontra-se inativo no sistema.");
-                    RequestDispatcher view = request.getRequestDispatcher("erro.jsp");
-                    view.forward(request, response);
-                }
-            } else {
-                request.setAttribute("erro", "o usuário não foi encontrado.");
-                RequestDispatcher view = request.getRequestDispatcher("erro.jsp");
-                view.forward(request, response);
-            }
-        }
+        
+        int id = Integer.parseInt(request.getParameter("param"));
+        
+        daoProjeto = new ProjetoDAO();
+        if(daoProjeto.finalizaProjeto(id)){
+            request.setAttribute("sucesso", "O processo foi finalizado com sucesso");
+            RequestDispatcher view = request.getRequestDispatcher("sucesso.jsp");
+            view.forward(request, response);
+        }else{
+            request.setAttribute("aviso", "Não foi possível finalizar o projeto. Verifique se todas resposas foram preenchidas");
+            RequestDispatcher view = request.getRequestDispatcher("aviso.jsp");
+            view.forward(request, response);
+        }      
     }
 
     /**

@@ -4,7 +4,7 @@
     Author     : Vítor
 --%>
 
-<%@page import="Model.Aluno"%>
+<%@page import="Model.Tabelas.Aluno"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -56,9 +56,11 @@
                                                                                 value="<%=a.getSenha()%>">
                         </div>
                         <div class="col-lg-2">
-                            <label for="exampleInputSenha">Status</label> <input type="text"
-                                                                                class="form-control" name="inputStatus"
-                                                                                value="<%=a.getStatus()%>">
+                            <label for="sel1">Status</label>
+                            <select name="inputStatus" class="form-control" id="selStatus">
+                                <option selected>Ativo</option>
+                                <option>Inativo</option>
+                            </select>
                         </div>
                     </div>
                 </div>

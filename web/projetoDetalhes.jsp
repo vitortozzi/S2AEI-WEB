@@ -4,8 +4,8 @@
     Author     : Vítor
 --%>
 
+<%@page import="Model.Tabelas.Projeto"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="Model.Projeto"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
