@@ -5,7 +5,7 @@
  */
 package Controller;
 
-import Model.Database.AlunoDAO;
+import Model.Negocio.EnAluno;
 import Model.Tabelas.Aluno;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(name = "DeletaAluno", urlPatterns = {"/deletaAluno"})
 public class DeletaAluno extends HttpServlet {
 
-    AlunoDAO dao;
+    EnAluno enAluno;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -67,8 +67,8 @@ public class DeletaAluno extends HttpServlet {
 
         ArrayList<Aluno> alunos = new ArrayList<>();
 
-        dao = new AlunoDAO();
-        alunos = dao.getAlunosAtivos();
+        enAluno = new EnAluno();
+        alunos = enAluno.getAlunosAtivos();
 
         request.setAttribute("alunos", alunos);
         RequestDispatcher view = request.getRequestDispatcher("listaAlunoDeleta.jsp");
@@ -87,8 +87,9 @@ public class DeletaAluno extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        boolean ok = dao.deleteAluno(request.getParameter("param"));
-        if (ok) {
+        enAluno = new EnAluno();
+        
+        if (enAluno.deletaAluno(request.getParameter("param"))) {
             request.setAttribute("sucesso", "O aluno foi removido com sucesso!");
             RequestDispatcher view = request.getRequestDispatcher("sucesso.jsp");
             view.forward(request, response);

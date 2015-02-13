@@ -8,6 +8,7 @@ package Controller;
 
 
 import Model.Database.AlunoDAO;
+import Model.Negocio.EnAluno;
 import Model.Tabelas.Aluno;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -94,8 +95,8 @@ public class AdicionaAluno extends HttpServlet {
         a.setPapel("Aluno");
         a.setStatus("Ativo");
 
-        AlunoDAO dao = new AlunoDAO();
-        boolean ok = dao.addAluno(a);
+        EnAluno aluno = new EnAluno();
+        boolean ok = aluno.adicionaAluno(a);
 
         if (ok == true) {
             request.setAttribute("sucesso", "O Usuário foi cadastrado com sucesso!");

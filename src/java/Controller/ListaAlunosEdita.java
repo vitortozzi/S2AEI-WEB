@@ -6,11 +6,10 @@
 package Controller;
 
 import Model.Tabelas.Aluno;
-import Model.Database.AlunoDAO;
+import Model.Negocio.EnAluno;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ListaAlunosEdita extends HttpServlet {
 
     Aluno a;
-    AlunoDAO dao;
+    EnAluno enAluno;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -71,8 +70,8 @@ public class ListaAlunosEdita extends HttpServlet {
 
         ArrayList<Aluno> alunos = new ArrayList<>();
 
-        dao = new AlunoDAO();
-        alunos = dao.getAlunos();
+        enAluno = new EnAluno();
+        alunos = enAluno.getAlunos();
 
         request.setAttribute("alunos", alunos);
         RequestDispatcher view = request.getRequestDispatcher("listaAlunosEdita.jsp");
@@ -92,9 +91,9 @@ public class ListaAlunosEdita extends HttpServlet {
             throws ServletException, IOException {
 
         a = new Aluno();
-        dao = new AlunoDAO();
+        enAluno = new EnAluno();
         
-        a = dao.getAluno(request.getParameter("param"));
+        a = enAluno.getAluno(request.getParameter("param"));
                  
         RequestDispatcher view = request.getRequestDispatcher("editarAluno.jsp");
         request.setAttribute("aluno", a);

@@ -6,7 +6,7 @@
 package Controller;
 
 import Model.Tabelas.Aluno;
-import Model.Database.AlunoDAO;
+import Model.Negocio.EnAluno;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;
@@ -22,10 +22,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "EditaAluno", urlPatterns = {"/editAluno"})
 public class EditaAluno extends HttpServlet {
-    
+
     Aluno a;
-    AlunoDAO dao;
-    
+    EnAluno enAluno;
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -43,7 +43,7 @@ public class EditaAluno extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet EditaAluno</title>");            
+            out.println("<title>Servlet EditaAluno</title>");
             out.println("</head>");
             out.println("<body>");
             out.println("<h1>Servlet EditaAluno at " + request.getContextPath() + "</h1>");
@@ -64,7 +64,7 @@ public class EditaAluno extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
     }
 
     /**
@@ -78,20 +78,18 @@ public class EditaAluno extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         a = new Aluno();
-        
-        
+
         request.setCharacterEncoding("UTF-8");
         a.setNome(request.getParameter("inputNome"));
         a.setCurso(request.getParameter("inputCurso"));
         a.setPeriodo(Integer.valueOf(request.getParameter("inputPeriodo")));
         a.setStatus(request.getParameter("inputStatus"));
         a.setEmail(request.getParameter("inputEmail"));
-        
-        dao = new AlunoDAO();
-        boolean ok = dao.updateAluno(a);
-        if (ok) {
+
+        enAluno = new EnAluno();
+        if (enAluno.atualizaAluno(a)) {
             request.setAttribute("sucesso", "O aluno foi editado com sucesso!");
             RequestDispatcher view = request.getRequestDispatcher("sucesso.jsp");
             view.forward(request, response);
@@ -99,7 +97,7 @@ public class EditaAluno extends HttpServlet {
             request.setAttribute("aviso", "Houve um erro ao editar o aluno");
             RequestDispatcher view = request.getRequestDispatcher("aviso.jsp");
             view.forward(request, response);
-        }   
+        }
     }
 
     /**

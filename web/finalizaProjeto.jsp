@@ -45,7 +45,7 @@
                     <tbody>
                         <%
                             Projeto p = (Projeto) request.getAttribute("projeto");
-                            if(p==null)
+                            if(p!=null)
                             {%>
                         <tr id="<%=p.getId()%>">
                             <td id="<%=p.getId()%>" style="display:none;"><%=p.getId()%></td>

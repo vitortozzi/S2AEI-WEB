@@ -5,7 +5,7 @@
  */
 package Controller;
 
-import Model.Database.ProjetoDAO;
+import Model.Negocio.EnProjeto;
 import Model.Tabelas.Projeto;
 import Utils.XMLParser;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import org.jdom2.JDOMException;
 @WebServlet(name = "PreencheProjeto", urlPatterns = {"/preencheProjeto"})
 public class PreencheProjeto extends HttpServlet {
 
-    ProjetoDAO daoProjeto;
+    EnProjeto enProjeto;
     Projeto p;
 
     /**
@@ -72,7 +72,7 @@ public class PreencheProjeto extends HttpServlet {
             throws ServletException, IOException {
 
         p = new Projeto();
-        daoProjeto = new ProjetoDAO();
+        enProjeto = new EnProjeto();
 
         HttpSession session = request.getSession();
         String nome = (String) session.getAttribute("nome");
@@ -80,8 +80,8 @@ public class PreencheProjeto extends HttpServlet {
         ArrayList<String> titulos = new ArrayList<>();
         ArrayList<String> questoes = new ArrayList<>();
 
-        p = daoProjeto.getProjetoPorLider(nome);
-        p.setRespostas(daoProjeto.getRespostas(p.getId()));
+        p = enProjeto.getProjetoPorLider(nome);
+        p.setRespostas(enProjeto.getRespostas(p.getId()));
 
         if (p.getRespostas().size() > 0) {
             if (p.getStatus().equals("Novo") || p.getStatus().equals("Em preenchimento")) {
@@ -124,12 +124,14 @@ public class PreencheProjeto extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        enProjeto = new EnProjeto();
+
         request.setCharacterEncoding("UTF-8");
         for (int i = 0; i < 9; i++) {
             p.getRespostas().set(i, request.getParameter("resposta" + i));
         }
 
-        if (daoProjeto.updateRespostas(p)) {
+        if (enProjeto.atualizaRespostas(p)) {
             request.setAttribute("sucesso", "O projeto foi salvo com sucesso!");
             RequestDispatcher view = request.getRequestDispatcher("sucesso.jsp");
             view.forward(request, response);

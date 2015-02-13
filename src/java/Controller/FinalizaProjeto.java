@@ -5,7 +5,7 @@
  */
 package Controller;
 
-import Model.Database.ProjetoDAO;
+import Model.Negocio.EnProjeto;
 import Model.Tabelas.Projeto;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -25,7 +25,7 @@ import javax.servlet.http.HttpSession;
 @WebServlet(name = "FinalizaProjeto", urlPatterns = {"/finalizaProjeto"})
 public class FinalizaProjeto extends HttpServlet {
 
-    ProjetoDAO daoProjeto;
+    EnProjeto enProjeto;
     Projeto projeto;
     
     HttpSession session;
@@ -70,10 +70,11 @@ public class FinalizaProjeto extends HttpServlet {
             throws ServletException, IOException {
         
         projeto = new Projeto();
-        daoProjeto = new ProjetoDAO();
+        enProjeto = new EnProjeto();
+        
         session = request.getSession();
         
-        projeto = daoProjeto.getProjetoPorLider((String)session.getAttribute("nome"));
+        projeto = enProjeto.getProjetoPorLider((String)session.getAttribute("nome"));
         
         request.setAttribute("projeto", projeto);
         RequestDispatcher view = request.getRequestDispatcher("finalizaProjeto.jsp");
@@ -95,8 +96,8 @@ public class FinalizaProjeto extends HttpServlet {
         
         int id = Integer.parseInt(request.getParameter("param"));
         
-        daoProjeto = new ProjetoDAO();
-        if(daoProjeto.finalizaProjeto(id)){
+        enProjeto = new EnProjeto();
+        if(enProjeto.finalizaProjeto(id)){
             request.setAttribute("sucesso", "O processo foi finalizado com sucesso");
             RequestDispatcher view = request.getRequestDispatcher("sucesso.jsp");
             view.forward(request, response);

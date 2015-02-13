@@ -5,9 +5,11 @@
  */
 package Controller;
 
-import Model.Database.AlunoDAO;
-import Model.Database.ProfessorDAO;
-import Model.Database.ProjetoDAO;
+
+import Model.Negocio.EnAluno;
+import Model.Negocio.EnProfessor;
+import Model.Negocio.EnProjeto;
+
 import Model.Tabelas.Aluno;
 import Model.Tabelas.Professor;
 import Model.Tabelas.Projeto;
@@ -15,7 +17,6 @@ import Model.Tabelas.Projeto;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -31,10 +32,10 @@ import javax.servlet.http.HttpSession;
 @WebServlet(name = "CriaProjeto", urlPatterns = {"/criaProjeto"})
 public class CriaProjeto extends HttpServlet {
 
-    AlunoDAO dao;
-    ProfessorDAO daoProf;
-    ProjetoDAO daoProj;
     Projeto projeto;
+    EnProjeto enProjeto;
+    EnAluno enAluno;
+    EnProfessor enProfessor;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -75,24 +76,25 @@ public class CriaProjeto extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        dao = new AlunoDAO();
-        daoProf = new ProfessorDAO();
-        daoProj = new ProjetoDAO();
-
+        enProjeto = new EnProjeto();
+        enAluno = new EnAluno();
+        enProfessor = new EnProfessor();
+        
         HttpSession session = request.getSession();
 
-        // Pegar nome da sessão e enviar ao banco
-        if (!dao.AlunosIsLeader((String) session.getAttribute("nome"))) {
+        if (!(enProjeto.jaLideraProjeto((String) session.getAttribute("nome")))) {           
+            
             ArrayList<Aluno> alunos = new ArrayList<>();
-            alunos = dao.getAlunosAtivos();
+            alunos = enAluno.getAlunosAtivos();
 
             ArrayList<Professor> professores = new ArrayList<>();
-            professores = daoProf.getProfessoresAtivos();
+            professores = enProfessor.getProfessoresAtivos();
 
             request.setAttribute("professores", professores);
             request.setAttribute("alunosAtivos", alunos);
             RequestDispatcher view = request.getRequestDispatcher("criarProjeto.jsp");
             view.forward(request, response);
+            
         } else {
             request.setAttribute("aviso", "Você já lidera um projeto ativo.");
             RequestDispatcher view = request.getRequestDispatcher("aviso.jsp");
@@ -125,8 +127,8 @@ public class CriaProjeto extends HttpServlet {
         projeto.setOrientador(request.getParameter("inputOrientador"));
         projeto.setMembros(request.getParameterValues("participantes"));
 
-        daoProj = new ProjetoDAO();
-        if (daoProj.insertProjeto(projeto)) {
+        enProjeto = new EnProjeto();
+        if (enProjeto.criaProjeto(projeto)) {
             request.setAttribute("sucesso", "O projeto foi criado com sucesso!");
             RequestDispatcher view = request.getRequestDispatcher("sucesso.jsp");
             view.forward(request, response);

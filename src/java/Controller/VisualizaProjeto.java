@@ -5,7 +5,7 @@
  */
 package Controller;
 
-import Model.Database.ProjetoDAO;
+import Model.Negocio.EnProjeto;
 import Model.Tabelas.Projeto;
 import Utils.XMLParser;
 import java.io.IOException;
@@ -29,10 +29,10 @@ import org.jdom2.JDOMException;
 @WebServlet(name = "VisualizaProjeto", urlPatterns = {"/visualizaProjeto"})
 public class VisualizaProjeto extends HttpServlet {
 
-    ProjetoDAO daoProjeto;
+    EnProjeto enProjeto;
     ArrayList<Projeto> projetos;
     Projeto p;
-    
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -75,13 +75,12 @@ public class VisualizaProjeto extends HttpServlet {
         HttpSession session = request.getSession();
 
         projetos = new ArrayList<>();
+        enProjeto = new EnProjeto();
 
-        daoProjeto = new ProjetoDAO();
-        if (session.getAttribute("papel").equals("Aluno")) {
-            projetos = daoProjeto.getProjetosParticipante((String) session.getAttribute("nome"));
-        } else if (session.getAttribute("papel").equals("Professor")) {
-            projetos = daoProjeto.getProjetosOrientador((String) session.getAttribute("nome"));
-        }
+        String papel = (String) session.getAttribute("papel");
+        String nome = (String) session.getAttribute("nome");
+
+        projetos = enProjeto.getProjetoPorEntidade(papel, nome);
 
         request.setAttribute("projetos", projetos);
         RequestDispatcher view = request.getRequestDispatcher("visualizarProjetos.jsp");
@@ -102,16 +101,16 @@ public class VisualizaProjeto extends HttpServlet {
             throws ServletException, IOException {
 
         p = new Projeto();
-        daoProjeto = new ProjetoDAO();
-        
+        enProjeto = new EnProjeto();
+
         ArrayList<String> titulos = new ArrayList<>();
         ArrayList<String> questoes = new ArrayList<>();
-        
-        int id = Integer.parseInt(request.getParameter("param"));      
-        p = daoProjeto.getProjetoPorID(id);
+
+        int id = Integer.parseInt(request.getParameter("param"));
+        p = enProjeto.getProjetoPorID(id);
         p.setId(id);
-        p.setRespostas(daoProjeto.getRespostas(p.getId()));
-        
+        p.setRespostas(enProjeto.getRespostas(p.getId()));
+
          if (p.getRespostas().size() > 0) {
             XMLParser xml = new XMLParser();
             try {
@@ -120,21 +119,16 @@ public class VisualizaProjeto extends HttpServlet {
             } catch (JDOMException ex) {
                 Logger.getLogger(PreencheProjeto.class.getName()).log(Level.SEVERE, null, ex);
             }
-
             request.setAttribute("dadosProjeto", p);
             request.setAttribute("listaTitulos", titulos);
             request.setAttribute("listaQuestoes", questoes);
             RequestDispatcher view = request.getRequestDispatcher("projetoDetalhes.jsp");
             view.forward(request, response);
-         }
-         else{
-             request.setAttribute("aviso", "Não há projetos aos quais você tem relação para exibir.");
+        } else {
+            request.setAttribute("aviso", "Não há projetos aos quais você tem relação para exibir.");
             RequestDispatcher view = request.getRequestDispatcher("aviso.jsp");
             view.forward(request, response);
-         }
-        
-        
-        // Consultar no banco respostas para este id de projeto
+        }
     }
 
     /**
