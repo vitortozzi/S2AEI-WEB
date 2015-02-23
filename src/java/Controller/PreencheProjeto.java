@@ -81,11 +81,10 @@ public class PreencheProjeto extends HttpServlet {
         ArrayList<String> questoes = new ArrayList<>();
 
         p = enProjeto.getProjetoPorLider(nome);
-        p.setRespostas(enProjeto.getRespostas(p.getId()));
-
-        if (p.getRespostas().size() > 0) {
-            if (p.getStatus().equals("Novo") || p.getStatus().equals("Em preenchimento")) {
-                XMLParser xml = new XMLParser();
+        
+        if (p.getId() != 0) {           
+            p.setRespostas(enProjeto.getRespostas(p.getId()));    
+            XMLParser xml = new XMLParser();
                 try {
                     titulos = xml.getTitulos();
                     questoes = xml.getQuestoes();
@@ -98,14 +97,9 @@ public class PreencheProjeto extends HttpServlet {
                 request.setAttribute("listaQuestoes", questoes);
                 RequestDispatcher view = request.getRequestDispatcher("preenchimentoProjeto.jsp");
                 view.forward(request, response);
-            } else {
-                request.setAttribute("aviso", "Seu projeto já foi finalizado e não pode ser editado.");
-                RequestDispatcher view = request.getRequestDispatcher("aviso.jsp");
-                view.forward(request, response);
-            }
         } else {
-            request.setAttribute("aviso", "Você não é líder de nenhum projeto. Para visualizar projetos do qual faz parte, clique em 'Projeto'"
-                    + " e em seguida clique em 'Visualizar'");
+            request.setAttribute("aviso", "Você não é lider de nenhum projeto que possa ser editado. Clique em Projetos -> Visualizar para verificar"
+                    + " os projetos que você participa.");
             RequestDispatcher view = request.getRequestDispatcher("aviso.jsp");
             view.forward(request, response);
         }

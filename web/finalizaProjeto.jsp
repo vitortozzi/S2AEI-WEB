@@ -27,6 +27,9 @@
     <body>
         <%@include file="header.jsp" %>
         <div class="container">
+            <%
+                Projeto p = (Projeto) request.getAttribute("projeto");
+                if ((p.getId() != 0)) {%>
             <table class="table table-striped">
                 <form action="finalizaProjeto" method="post" id="myForm">
                     <input type="hidden" name="param" />
@@ -43,10 +46,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <%
-                            Projeto p = (Projeto) request.getAttribute("projeto");
-                            if(p!=null && ((p.getStatus().equals("Novo")) || p.getStatus().equals("Em preenchimento")))
-                            {%>
                         <tr id="<%=p.getId()%>">
                             <td id="<%=p.getId()%>" style="display:none;"><%=p.getId()%></td>
                             <td><%=p.getTitulo()%></td>
@@ -64,12 +63,15 @@
                                         <span class="glyphicon glyphicon-pencil"></span> Finalizar
                                     </button>
                                 </div>
-                            </td>                           
-                        </tr>
-                        <%}%>
+                            </td>
+                        </tr>                     
+
                     </tbody>
                 </form>
             </table>
+            <%} else {%>
+            <h1>Não há projetos para serem finalizados por você.</h1>
+            <%}%>
         </div>
     </body>
 </html>
